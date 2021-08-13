@@ -7,12 +7,14 @@ import seaborn as sns
 
 def labeled_scatter(df, year, save=False):
     
+    # set the aesthetic style and context of the plots
+    sns.set_style("darkgrid")
+    sns.set_context("notebook")
+    
     xtick = np.arange(0, 20, 2.5)
     ytick = range(45, 85, 5)
-    xlabel = "GDP (trillions of USD)"
-    ylabel = "Life expectancy at birth (years)"
     
-    plt.figure(figsize=(12, 7))
+    plt.figure(figsize=(15, 10))
     data = df[df.Year == year].reset_index().copy()
     data["GDP_d"] = data.GDP / (10 ** 12)
 
@@ -23,8 +25,11 @@ def labeled_scatter(df, year, save=False):
                     s=120
     )
 
-    plt.xlabel(xlabel), plt.ylabel(ylabel) 
-    plt.xticks(xtick), plt.yticks(ytick)
+    plt.xlabel("GDP (trillions of USD)", fontsize=12)
+    plt.ylabel("Life expectancy at birth (years)", fontsize=12) 
+    plt.xticks(xtick)
+    plt.yticks(ytick)
+    
     plt.title("GDP and Life expectancy at birth (years) in {}".format(year), 
               fontsize=15)
     
@@ -51,7 +56,7 @@ def fill_under_lines(ax=None, alpha=.2, **kwargs):
         ax.fill_between(x, 0, y, color=line.get_color(), alpha=alpha, **kwargs)
         
 
-def compare_plots(df, country):
+def compare_plots(df, country, color="steelblue"):
     
     sns.set_style("white")
     sns.set_context("notebook", rc={"lines.linewidth": 1.2})
@@ -60,12 +65,13 @@ def compare_plots(df, country):
     fig, ax = plt.subplots(1, 2, sharey=False, figsize=(16, 5))
     
     ax[0] = sns.lineplot(
-        data=data, x="Year", y="GDP", palette="Blues", ax=ax[0]
+        data=data, x="Year", y="GDP", color=color, ax=ax[0]
     )
         
     fill_under_lines(ax[0])
     xlab = [2000, 2005, 2010, 2015]
-    func_y = ticker.FuncFormatter(lambda y, pos: '{:,.0f}'.format(y/10 ** 9) + ' B')
+    func_y = ticker.FuncFormatter(lambda y, pos: '{:,.0f}'.\
+                                  format(y/10 ** 9) + ' B')
     
     ax[0].yaxis.set_major_formatter(func_y)
     ax[0].set_xlabel("Years")
@@ -80,10 +86,11 @@ def compare_plots(df, country):
     ax[0].xaxis.grid(False)
     sns.despine(ax=ax[0], left=True, bottom=True)
     
-    fig.suptitle('{}'.format(country), fontsize=16)
+    fig.suptitle('{}'.format(country), fontsize=18)
     
     ax[1] = sns.lineplot(
-        data=data, x="Year", y="Life expectancy at birth (years)", palette="Blues", ax=ax[1]
+        data=data, x="Year", y="Life expectancy at birth (years)", 
+        color=color, ax=ax[1]
     )
     ax[1].set_xlim(2000, 2015)
     ax[1].set_ylim(40, 90)
